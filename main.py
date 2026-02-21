@@ -42,7 +42,7 @@ async def check_vessel_risk(context: ContextTypes.DEFAULT_TYPE):
         chat_id = os.getenv("TELEGRAM_CHAT_ID")
         if df.empty or not chat_id: return
 
-        # Identify all currently critical vessels
+        # Proactive alerting for new Critical vessels
         critical_vessels = df[df['risk_level'] == 'CRITICAL']['vessel_id'].astype(str).tolist()
         new_alerts = [v for v in critical_vessels if v not in sent_alerts]
 
@@ -51,7 +51,6 @@ async def check_vessel_risk(context: ContextTypes.DEFAULT_TYPE):
             await context.bot.send_message(chat_id=chat_id, text=msg, parse_mode='Markdown')
             sent_alerts.update(new_alerts)
         
-        # Keep only active critical vessels in the notification memory
         sent_alerts = sent_alerts.intersection(set(critical_vessels))
     except Exception as e:
         print(f"Monitoring Loop Error: {e}")
@@ -70,44 +69,43 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("❌ Error: Port operational data is currently unreachable.")
             return
 
-        # 1. Local data aggregation
+        # 1. Local data aggregation (Pre-calculating for the AI)
         counts = df['risk_level'].value_counts().to_dict()
         
-        # 2. Senior Analyst System Instruction
+        # 2. Strict Senior Analyst System Instruction
         system_instruction = (
             "You are the SmartPort AI Senior Operations Analyst. "
             "TONE: High-level executive, professional, and technical. "
-            "MANDATORY BEHAVIOR: Every response MUST start with an immediate status report. "
+            "MANDATORY BEHAVIOR: You must provide an IMMEDIATE STATUS REPORT upon any user interaction. "
             "REPORT STRUCTURE: \n"
-            "1. Categorical Breakdown with Emojis:\n"
+            "1. Categorical Breakdown with Emojis (Bold the counts):\n"
             "   - 🔴 CRITICAL: [count]\n"
             "   - 🟡 WARNING: [count]\n"
             "   - 🟢 NORMAL: [count]\n"
-            "2. Required Operational Recommendations:\n"
+            "2. Current Operational Protocols (Strictly include these three):\n"
             "   - CRITICAL: Immediate intervention (reassign berth).\n"
             "   - WARNING: Monitor ETA and AIS stability closely.\n"
             "   - NORMAL: Routine operations.\n"
-            "LANGUAGE: Default to English. However, if the user interacts in Spanish, "
-            "seamlessly switch to professional Spanish. "
-            "Do not list individual vessel IDs unless explicitly requested for deep-dive analysis."
+            "LANGUAGE: Primary English. Detect and switch to Spanish if the user greets or asks in Spanish. "
+            "Note: Focus on the summary. Do not list Vessel IDs unless requested."
         )
 
         context_payload = {
             "summary_counts": counts,
-            "total_monitored": len(df)
+            "total_vessels": len(df)
         }
 
         completion = ai_client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
                 {"role": "system", "content": system_instruction},
-                {"role": "user", "content": f"Context Data: {context_payload}\nUser Input: {update.message.text}"}
+                {"role": "user", "content": f"Context: {context_payload}\nUser Input: {update.message.text}"}
             ]
         )
         await update.message.reply_text(completion.choices[0].message.content, parse_mode='Markdown')
 
     except Exception as e:
-        print(f"AI Analyst Exception: {e}")
+        print(f"AI Analyst Error: {e}")
 
 if __name__ == '__main__':
     print("🚢 SmartPort AI Bot - Senior Executive Mode Active")
