@@ -52,14 +52,14 @@ The ecosystem is organized into a four-layer technical structure:
 
 ## 📂 Repository Structure
 
-* **`01_Scripts/`**: Execution scripts, data cleaning, and synchronization logs.
+* **`01_Scripts/`**: Utility scripts for data cleaning and training.
 * **`02_Data/`**: Full dataset hierarchy (Raw, Working, Validation).
-* **`03_Notebooks/`**: End-to-end development pipeline (EDA, Feature Engineering, Modeling).
-* **`04_Models/`**: Serialized `.pkl` files for the model and processing pipelines.
+* **`03_Notebooks/`**: End-to-end development pipeline (EDA, Modeling).
+* **`04_Models/`**: Serialized `.pkl` files for the model and pipelines.
 * **`05_Outputs/`**: Prediction results and exported risk alerts.
 * **`docs/`**: Technical documentation and legacy workflow backups.
 * **`telegram_bot.py`**: The core AI Analyst engine for Telegram.
-* **`ai_notifier.py`**: Critical risk synchronization script.
+* **`logs_builder_sheets.py`**: Main synchronization engine for Cloud Operational Logs.
 * **`Procfile`**: Configuration for deployment on Railway.
 * **`requirements.txt`**: Optimized system dependencies.
 
