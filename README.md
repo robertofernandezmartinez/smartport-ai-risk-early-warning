@@ -1,84 +1,73 @@
 # 🚢 SmartPort AI: Real-Time Maritime Risk Monitoring
 ### *Predictive Intelligence for Port Operations & Vessel Delay Prevention*
 
-**SmartPort AI** is an end-to-end maritime risk intelligence system designed to predict, monitor, and act on vessel delays in congested port environments. It transforms raw AIS (Automatic Identification System) movement data into **actionable operational alerts**, identifying vessels at risk of exceeding the critical 120-minute berthing delay window.
+**SmartPort AI** es un sistema de inteligencia de riesgo marítimo diseñado para predecir, monitorear y actuar sobre los retrasos de buques en entornos portuarios congestionados. Transforma datos brutos de movimiento AIS en **alertas operacionales accionables**, identificando buques en riesgo de superar la ventana crítica de 120 minutos de retraso.
 
-Insights are delivered via a cloud-based audit trail and a **Senior AI Analyst** on Telegram, optimized for high-speed executive reporting.
+El sistema entrega insights a través de un registro en la nube y un **Analista Senior de IA** en Telegram, optimizado para reportes ejecutivos de alta velocidad.
 
-> **Data Source:** [Container Ship Tracking Dataset (Kaggle)](https://www.kaggle.com/datasets/bobaaayoung/container-ship-data-collection)
-
----
-
-## 🎯 Project Purpose & Business Logic
-Port operations rely on tight berthing windows. Delays beyond **120 minutes** have cascading economic impacts on the entire supply chain. 
-
-SmartPort AI answers the critical operational question: 
-> *"Which vessels are likely to exceed the 120-minute delay threshold, and what is the prioritized operational response?"*
-
-### Core Objectives
-* **Predict** vessel delays exceeding 120 minutes using an XGBoost classification engine.
-* **Categorize Risk** automatically into a standardized three-tier matrix.
-* **Notify Operators** in real-time via proactive cloud-to-mobile synchronization.
-* **Executive Insights** provided by a GPT-4o-mini powered analyst with bilingual support.
+> **Fuente de Datos:** [Container Ship Tracking Dataset (Kaggle)](https://www.kaggle.com/datasets/bobaaayoung/container-ship-data-collection)
 
 ---
 
-## 🏗️ Architecture Overview
+## 🎯 Propósito del Proyecto y Lógica de Negocio
+Las operaciones portuarias dependen de ventanas de atraque estrictas. Los retrasos superiores a **120 minutos** generan impactos económicos en cascada en toda la cadena de suministro.
 
-SmartPort AI is built as a high-performance three-layer ecosystem:
-
-
-
-### 1. ML Prediction Engine (XGBoost)
-* **Feature Engineering:** Processes movement-based features such as speed stability and heading variance.
-* **Inference:** Runs an **XGBoost** model trained to classify delay probability with high precision.
-* **Output:** Generates a `risk_score` (0-1) and a recommended action per vessel.
-
-### 2. Cloud Audit & Operational Dashboard (Google Sheets)
-* **Single Source of Truth:** Uses Google Sheets as a lightweight cloud data warehouse for auditability.
-* **Data Integrity:** Every prediction is logged with a unique **SHA-256 hash** (`prediction_id`), ensuring full traceability and preventing duplicates.
-
-### 3. Command & Control: Proactive AI Bot
-* **Asynchronous Caching:** Implements a background `job_queue` that syncs with the cloud every 60s, ensuring **zero-latency** responses.
-* **Proactive Executive Reporting:** Automatically pushes a full status report (categorical counts + emojis) whenever a new **CRITICAL** risk is detected.
-* **Smart Analysis:** Powered by **OpenAI GPT-4o-mini**, allowing natural language queries and automated protocol recommendations.
+SmartPort AI responde a la pregunta operativa crítica:
+> *"¿Qué buques es probable que superen el umbral de retraso de 120 minutos y cuál es la respuesta operativa priorizada?"*
 
 ---
 
-## 🚦 Risk Classification & Decision Matrix
+## 🏗️ Resumen de la Arquitectura
 
-| Risk Level | Score Range | Operational Meaning | Suggested Action |
+El ecosistema se organiza en una estructura técnica de cuatro capas:
+
+### 1. Motor de Predicción ML (`01_Scripts` & `04_Models`)
+* **Feature Engineering:** Procesa estabilidad de velocidad y varianza de rumbo.
+* **Inferencia:** Modelo **XGBoost** entrenado para clasificar la probabilidad de retraso.
+* **Modelos:** Almacenados en formato `.pkl` para ejecución inmediata.
+
+### 2. Gestión de Datos (`02_Data`)
+* **Raw & Working:** Ciclo completo de vida del dato, desde el `tracking_db.csv` original hasta los datasets balanceados para entrenamiento.
+* **Outputs:** Generación de `risk_alerts.csv` para auditoría local.
+
+### 3. Centro de Control en la Nube (Google Sheets)
+* **Single Source of Truth:** Repositorio en la nube para visibilidad operativa inmediata.
+* **Integridad:** Cada predicción incluye un hash SHA-256 único para trazabilidad total.
+
+### 4. Asistente de IA Proactivo (`telegram_bot.py`)
+* **Asynchronous Caching:** Sincronización en segundo plano cada 60s para respuestas instantáneas.
+* **Executive Reporting:** Notificaciones automáticas con desgloses por categoría (🔴/🟡/🟢) y protocolos de acción.
+
+---
+
+## 🚦 Clasificación de Riesgo y Matriz de Decisión
+
+| Nivel de Riesgo | Rango de Score | Significado Operativo | Acción Sugerida |
 | :--- | :--- | :--- | :--- |
-| **🔴 CRITICAL** | > 0.80 | High likelihood of >120 min delay | Immediate intervention (reassign berth) |
-| **🟡 WARNING** | 0.50 – 0.80 | Elevated risk | Monitor ETA and AIS stability closely |
-| **🟢 NORMAL** | < 0.50 | Low risk | Routine operations |
+| **🔴 CRITICAL** | > 0.80 | Alta probabilidad de retraso >120 min | Intervención inmediata (reasignar atraque) |
+| **🟡 WARNING** | 0.50 – 0.80 | Riesgo elevado | Monitorear ETA y estabilidad de AIS |
+| **🟢 NORMAL** | < 0.50 | Bajo riesgo | Operaciones de rutina |
 
 ---
 
-## 📊 Dashboard Schema
+## 📂 Estructura del Repositorio
 
-| Column | Description |
-| :--- | :--- |
-| `prediction_id` | Unique SHA-256 hash for full traceability. |
-| `timestamp` | Exact execution time of the ML inference. |
-| `vessel_id` | Unique identifier for the vessel (AIS). |
-| `risk_score` | Model confidence (0.0 to 1.0). |
-| `risk_level` | Categorization (CRITICAL / WARNING / NORMAL). |
-| `action` | Automated operational recommendation. |
+* **`01_Scripts/`**: Scripts de ejecución, limpieza y logs.
+* **`02_Data/`**: Datasets (Raw, Working, Validation).
+* **`03_Notebooks/`**: Pipeline completo de desarrollo (EDA, Feature Engineering, Modeling).
+* **`04_Models/`**: Archivos `.pkl` del modelo entrenado y pipelines.
+* **`05_Outputs/`**: Resultados de predicciones y alertas.
+* **`docs/`**: Documentación técnica y backups de workflows (n8n).
+* **`telegram_bot.py`**: El motor del Analista de IA para Telegram.
+* **`ai_notifier.py`**: Script de sincronización de alertas críticas.
+* **`Procfile`**: Configuración para despliegue en Railway.
+* **`requirements.txt`**: Dependencias optimizadas del sistema.
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Machine Learning:** Python, XGBoost, Scikit-learn, Pandas.
-* **Cloud & API:** Google Sheets API (`gspread`), OpenAI API (**GPT-4o-mini**).
-* **Interface:** Telegram Bot API (`python-telegram-bot` with `job-queue`).
-* **Performance:** Asynchronous background caching and multithreading.
-* **Security:** SHA-256 Hashing, Environment Variables (`.env`).
-
----
-
-## 🚀 Key AI Features
-* **Immediate Status Report:** Every interaction starts with a real-time categorical breakdown.
-* **Bilingual Support:** Automatically detects and responds in English or Spanish.
-* **Operational Protocols:** Direct mapping of AI predictions to specific port authority actions.
+* **ML:** Python, XGBoost, Scikit-learn, Pandas.
+* **Cloud:** Google Sheets API (`gspread`), OpenAI API (**GPT-4o-mini**).
+* **Interface:** Telegram Bot API (`python-telegram-bot` con `job-queue`).
+* **Seguridad:** Hashing SHA-256, Variables de entorno (`.env`).
