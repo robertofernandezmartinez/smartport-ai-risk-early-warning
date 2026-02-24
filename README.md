@@ -19,23 +19,19 @@ SmartPort AI answers the critical operational question:
 
 ## 🏗️ Architecture Overview
 
-The ecosystem is organized into a four-layer technical structure:
+The ecosystem is organized into a robust, autonomous ML structure:
 
-### 1. ML Prediction Engine (`01_Scripts` & `04_Models`)
-* **Feature Engineering:** Processes speed stability, heading variance, and historical congestion.
-* **Inference:** An **XGBoost** model trained to classify delay probability with high precision.
-* **Models:** Stored in `.pkl` format for immediate deployment and retraining.
+### 1. Autonomous ML Engine (`04_Models`)
+* **Encapsulated Pipeline:** Feature engineering (vessel dynamics, time intervals) is baked directly into the Scikit-Learn pipeline object (`.pkl`). 
+* **Zero-Friction Ingestion:** The model safely accepts raw, unformatted AIS data, dynamically handling missing values and type casting without the need for external processing scripts.
+* **Inference:** A calibrated **XGBoost** model classifies delay probability with high precision.
 
-### 2. Data Lifecycle Management (`02_Data`)
-* **Raw & Working:** Full data pipeline from the original `tracking_db.csv` to balanced datasets for model training.
-* **Outputs:** Automated generation of `risk_alerts.csv` for local auditing and verification.
-
-### 3. Cloud Command Center (Google Sheets)
+### 2. Cloud Command Center (Google Sheets)
 * **Single Source of Truth:** Cloud-based repository for immediate operational visibility.
-* **Data Integrity:** Every prediction includes a unique **SHA-256 hash** (`prediction_id`) for total traceability.
+* **Data Integrity:** Every prediction includes a unique **SHA-256 hash** for total traceability.
 
-### 4. Proactive AI Assistant (`telegram_bot.py`)
-* **Asynchronous Caching:** Background syncing every 60s ensures **zero-latency** responses to user queries.
+### 3. Proactive AI Assistant (`telegram_bot.py`)
+* **Asynchronous Caching:** Background syncing ensures **zero-latency** responses to user queries.
 * **Executive Reporting:** Automatic push notifications with categorical breakdowns (🔴/🟡/🟢) and direct action protocols.
 
 ---
