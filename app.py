@@ -85,7 +85,7 @@ operation_order = st.sidebar.selectbox("Action Order:", [
 if st.sidebar.button("Execute & Notify Telegram"):
     # Here logic to connect to your Telegram Bot
     st.sidebar.success(f"Order: '{operation_order}' sent to {target_terminal}")
-    st.sidebar.toast("Telegram Alert Dispatched!")
+    st.toast("Telegram Alert Dispatched!")
 
 st.sidebar.markdown("---")
 st.sidebar.caption("SmartPort AI v1.0 | Operational Intelligence") 
