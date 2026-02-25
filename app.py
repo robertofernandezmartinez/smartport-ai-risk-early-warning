@@ -69,23 +69,57 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 # =====================================================================
-# 4. ACTION CENTER (Sidebar)
+# 4. ACTION CENTER (Sidebar) - UPDATED
 # =====================================================================
-st.sidebar.title("⚓ Port Command")
-st.sidebar.info("Operational overrides and manual alerts.")
+import requests
 
-target_terminal = st.sidebar.selectbox("Select Terminal:", ["Terminal A (North)", "Terminal B (South)", "Dry Dock 1"])
+st.sidebar.title("⚓ Port Command")
+
+# Bot Configuration (Fill these in)
+TOKEN = "YOUR_TELEGRAM_TOKEN"
+CHAT_ID = "YOUR_CHAT_ID"
+
+target_terminal = st.sidebar.selectbox("Select Terminal:", [
+    "Terminal A (North)", 
+    "Terminal B (South)", 
+    "Dry Dock 1"
+])
+
+# Action mapping based on your alert logic
 operation_order = st.sidebar.selectbox("Action Order:", [
-    "Prioritize Perishables", 
-    "Increase Crane Speed", 
-    "Open Gate 4", 
-    "Redirect Incoming Vessel"
+    "Reassign Berth (Emergency)", 
+    "Prioritize AIS Data Sync", 
+    "Standard Flow Optimization"
 ])
 
 if st.sidebar.button("Execute & Notify Telegram"):
-    # Here logic to connect to your Telegram Bot
-    st.sidebar.success(f"Order: '{operation_order}' sent to {target_terminal}")
-    st.toast("Telegram Alert Dispatched!")
+    # Professional message construction
+    message = (
+        f"⚓ *SMARTPORT COMMAND LOG*\n\n"
+        f"📍 *Target:* {target_terminal}\n"
+        f"⚙️ *Action:* {operation_order}\n"
+        f"✅ *Status:* Executed via Dashboard\n"
+        f"👤 *Operator:* Admin"
+    )
+    
+    # Real-time Telegram API request
+    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+    payload = {
+        "chat_id": CHAT_ID, 
+        "text": message, 
+        "parse_mode": "Markdown"
+    }
+    
+    try:
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            # Fixed: global toast notification
+            st.toast("Telegram Alert Dispatched!") 
+            st.sidebar.success("Command Sent Successfully!")
+        else:
+            st.sidebar.error("Telegram API Error")
+    except Exception as e:
+        st.sidebar.error(f"Connection Error: {e}")
 
 st.sidebar.markdown("---")
-st.sidebar.caption("SmartPort AI v1.0 | Operational Intelligence") 
+st.sidebar.caption("SmartPort AI v1.0 | Operational Intelligence")
