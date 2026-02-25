@@ -88,4 +88,4 @@ if st.sidebar.button("Execute & Notify Telegram"):
     st.sidebar.toast("Telegram Alert Dispatched!")
 
 st.sidebar.markdown("---")
-st.sidebar.caption("SmartPort AI v1.0 | Operational Intelligence")
+st.sidebar.caption("SmartPort AI v1.0 | Operational Intelligence") 
