@@ -1,14 +1,22 @@
 # 🚢 SmartPort AI: Real-Time Maritime Risk Monitoring
 ### *Predictive Intelligence for Port Operations & Vessel Delay Prevention*
 
-## 🌐 Live Command Center
-**Access the real-time dashboard here:** [https://smartport-ai-risk-early-warning.streamlit.app/](https://smartport-ai-risk-early-warning.streamlit.app/)
-
----
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_svg)](https://smartport-ai-risk-early-warning.streamlit.app/)
 
 **SmartPort AI** is an end-to-end maritime risk intelligence system designed to predict, monitor, and act on vessel delays in congested port environments. It transforms raw AIS (Automatic Identification System) movement data into **actionable operational alerts**, identifying vessels at risk of exceeding the critical 120-minute berthing delay window.
 
-The system delivers insights via a **Cloud Command Center (Streamlit)** and a **Senior AI Analyst on Telegram**, optimized for high-speed executive reporting and real-time tactical dispatch.
+---
+
+## 🌐 Live Command Center
+**Access the real-time dashboard here:** [https://smartport-ai-risk-early-warning.streamlit.app/](https://smartport-ai-risk-early-warning.streamlit.app/)
+
+### 🛠️ Core Components & Integration
+* **🖥️ Cloud Command Center ([Streamlit](https://smartport-ai-risk-early-warning.streamlit.app/)):** A high-visibility web dashboard for port authorities to monitor live vessel risk scores and operational status.
+* **🤖 AI Operational Assistant (Telegram):** An automated bot that delivers real-time critical alerts (🔴) and handles on-the-go queries via an asynchronous tactical interface.
+* **☁️ Live Data Backbone (Google Sheets):** A cloud-synchronized "Single Source of Truth" that connects the ML engine with the front-end for zero-latency data updates.
+* **🧠 Predictive Core (XGBoost):** A calibrated machine learning pipeline that transforms raw AIS telemetry into high-precision delay probabilities.
+
+---
 
 > **Data Source:** [Container Ship Tracking Dataset (Kaggle)](https://www.kaggle.com/datasets/bobaaayoung/container-ship-data-collection)
 
@@ -24,21 +32,19 @@ SmartPort AI answers the critical operational question:
 
 ## 🏗️ Architecture Overview
 
-The ecosystem is organized into a robust, autonomous ML structure:
-
 ### 1. Autonomous ML Engine (`04_Models`)
 * **Encapsulated Pipeline:** Feature engineering (vessel dynamics, time intervals) is baked directly into the Scikit-Learn pipeline object (`.pkl`). 
 * **Zero-Friction Ingestion:** The model safely accepts raw, unformatted AIS data, dynamically handling missing values and type casting.
 * **Inference:** A calibrated **XGBoost** model classifies delay probability with high precision.
 
 ### 2. Operational Command Center (`app.py`)
-* **Streamlit Cloud Dashboard:** A real-time web interface for port authorities to visualize risk levels.
+* **Streamlit Cloud Dashboard:** Real-time web interface for visualizing risk levels and history.
 * **Bidirectional Integration:** Reads live data from Google Sheets and triggers tactical notifications via Telegram.
-* **Enterprise Security:** Fully powered by **Streamlit Secrets (TOML)** to manage encrypted API credentials for Google Cloud and Telegram.
+* **Enterprise Security:** Fully powered by **Streamlit Secrets (TOML)** to manage encrypted API credentials.
 
 ### 3. Cloud Database (Google Sheets)
-* **Single Source of Truth:** Cloud-based repository (via `gspread`) for immediate operational visibility.
-* **Data Integrity:** Every prediction includes a unique **SHA-256 hash** for total traceability.
+* **Single Source of Truth:** Cloud-based repository (via `gspread`) for immediate operational visibility and easy team access.
+* **Data Integrity:** Every prediction includes a unique **SHA-256 hash** (prediction_id) for total audit traceability.
 
 ### 4. Proactive AI Assistant (`telegram_bot.py`)
 * **Asynchronous Caching:** Background syncing ensures **zero-latency** responses to user queries.
@@ -76,7 +82,7 @@ The ecosystem is organized into a robust, autonomous ML structure:
 * **Web Dashboard:** Streamlit, Plotly.
 * **Cloud & API:** Google Sheets API (`gspread`), OpenAI API (**GPT-4o-mini**).
 * **Interface:** Telegram Bot API (`python-telegram-bot`).
-* **Security:** SHA-256 Hashing, Streamlit Secrets (TOML), Environment Variables.
+* **Security:** SHA-256 Hashing, Streamlit Secrets (TOML).
 
 ---
 
