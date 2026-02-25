@@ -69,57 +69,40 @@ fig.update_layout(
 st.plotly_chart(fig, use_container_width=True)
 
 # =====================================================================
-# 4. ACTION CENTER (Sidebar) - UPDATED
+# 4. ACTION CENTER (Sidebar) - SHIP-SPECIFIC
 # =====================================================================
-import requests
-
 st.sidebar.title("⚓ Port Command")
 
-# Bot Configuration (Fill these in)
-TOKEN = "YOUR_TELEGRAM_TOKEN"
-CHAT_ID = "YOUR_CHAT_ID"
+# Bot Config
+TOKEN = "8528957593:AAFe92KmsIT2Lmw2qW6JJvpW69H3MPCXY9k"
+CHAT_ID = "8460877081"
 
-target_terminal = st.sidebar.selectbox("Select Terminal:", [
-    "Terminal A (North)", 
-    "Terminal B (South)", 
-    "Dry Dock 1"
-])
+# 1. Select the Area
+target_terminal = st.sidebar.selectbox("Terminal Area:", ["Terminal A", "Terminal B", "Dry Dock 1"])
 
-# Action mapping based on your alert logic
+# 2. Select the Specific Vessel (This makes it real!)
+vessel_id = st.sidebar.text_input("Vessel ID / Container ID:", value="Vessel-742")
+
+# 3. Select the Specific Action
 operation_order = st.sidebar.selectbox("Action Order:", [
-    "Reassign Berth (Emergency)", 
-    "Prioritize AIS Data Sync", 
-    "Standard Flow Optimization"
+    "Emergency Berth Reassignment", 
+    "Priority Unloading", 
+    "Hold in Anchorage Area",
+    "Customs Inspection Hold"
 ])
 
 if st.sidebar.button("Execute & Notify Telegram"):
-    # Professional message construction
+    # The message now includes the SPECIFIC SHIP
     message = (
-        f"⚓ *SMARTPORT COMMAND LOG*\n\n"
-        f"📍 *Target:* {target_terminal}\n"
+        f"🚨 *OPERATIONAL COMMAND*\n\n"
+        f"🚢 *Vessel:* {vessel_id}\n"
+        f"📍 *Location:* {target_terminal}\n"
         f"⚙️ *Action:* {operation_order}\n"
-        f"✅ *Status:* Executed via Dashboard\n"
-        f"👤 *Operator:* Admin"
+        f"✅ *Status:* Confirmed by Ops"
     )
     
-    # Real-time Telegram API request
+    # Send to Telegram
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-    payload = {
-        "chat_id": CHAT_ID, 
-        "text": message, 
-        "parse_mode": "Markdown"
-    }
-    
-    try:
-        response = requests.post(url, json=payload)
-        if response.status_code == 200:
-            # Fixed: global toast notification
-            st.toast("Telegram Alert Dispatched!") 
-            st.sidebar.success("Command Sent Successfully!")
-        else:
-            st.sidebar.error("Telegram API Error")
-    except Exception as e:
-        st.sidebar.error(f"Connection Error: {e}")
-
-st.sidebar.markdown("---")
-st.sidebar.caption("SmartPort AI v1.0 | Operational Intelligence")
+    payload = {"chat_id": CHAT_ID, "text": message, "parse_mode": "Markdown"}
+    requests.post(url, json=payload)
+    st.toast(f"Order sent for {vessel_id}")
