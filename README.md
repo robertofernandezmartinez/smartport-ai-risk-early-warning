@@ -1,8 +1,6 @@
 # 🚢 SmartPort AI: Real-Time Maritime Risk Monitoring
 ### *Predictive Intelligence for Port Operations & Vessel Delay Prevention*
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_svg)](https://smartport-ai-risk-early-warning.streamlit.app/)
-
 **SmartPort AI** is an end-to-end maritime risk intelligence system designed to predict, monitor, and act on vessel delays in congested port environments. It transforms raw AIS (Automatic Identification System) movement data into **actionable operational alerts**, identifying vessels at risk of exceeding the critical 120-minute berthing delay window.
 
 ---
